@@ -337,9 +337,10 @@ class PasswordResetModalState extends State<PasswordResetModal> {
           child: TextButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const AuthScreen()),
+                (Route<dynamic> route) => false,
               );
             },
             child: const Text('Cancelar'),
