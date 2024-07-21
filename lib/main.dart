@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vacantes/screens/edit_profile_screen.dart';
+import 'package:vacantes/screens/forgot_password.dart';
 import 'screens/auth_screen.dart';
 import 'screens/create_job_screen.dart';
 import 'screens/job_offers_screen.dart';
@@ -30,6 +31,7 @@ class JobOffersApp extends StatelessWidget {
         '/createJob': (context) => const CreateJobScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/editProfile': (context) => const EditProfileScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
       },
     );
   }

@@ -154,13 +154,41 @@ class LoginScreenState extends State<AuthScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _submitForm,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    textStyle: const TextStyle(fontSize: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        textStyle: const TextStyle(fontSize: 18),
+                      ),
+                      child: const Text('Iniciar sesión'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/register'); // Assumes '/register' is the route for RegisterScreen
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                        textStyle: const TextStyle(fontSize: 18),
+                      ),
+                      child: const Text('Registrarse'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/forgot-password'); // Assumes '/forgot-password' is the route for ForgotPasswordScreen
+                  },
+                  child: const Text(
+                    '¿Olvidaste tu contraseña?',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
-                  child: const Text('Iniciar sesión'),
                 ),
               ],
             ),

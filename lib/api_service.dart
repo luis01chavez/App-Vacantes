@@ -203,5 +203,33 @@ class ApiService {
       throw Exception('Failed to log out');
     }
   }
+
+  Future<void> sendResetCode(String correo) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/usuarios/enviar-codigo-cambio-contrasena?correo=$correo'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 500) {
+      throw Exception('No se púdo enviar el código');
+    }if (response.statusCode == 400) {
+      throw Exception('Este correo no se encuentra registrado en la aplicación');
+    }
+  }
+
+  Future<void> resetPassword(String correo, String codigo, String nuevaContrasena) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/usuarios/cambiar-contrasena?correo=$correo&codigo=$codigo&nuevaContrasena=$nuevaContrasena'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );  
+    if (response.statusCode == 500) {
+      throw Exception('Fallo al reestablecer la contraseña');
+    }if (response.statusCode == 400) {
+      throw Exception('Código incorrecto o caducado');
+    }
+  }
   
 }
