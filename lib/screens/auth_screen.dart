@@ -34,7 +34,7 @@ class LoginScreenState extends State<AuthScreen> {
         await _storeToken(token);
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful')),
+          const SnackBar(content: Text('Inicio de sesión exitoso')),
         );
         Navigator.pushReplacementNamed(context, '/');
       } catch (error) {
@@ -167,7 +167,7 @@ class LoginScreenState extends State<AuthScreen> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/register'); // Assumes '/register' is the route for RegisterScreen
+                        Navigator.pushNamed(context, '/user-register');
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -180,7 +180,7 @@ class LoginScreenState extends State<AuthScreen> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/forgot-password'); // Assumes '/forgot-password' is the route for ForgotPasswordScreen
+                    Navigator.pushNamed(context, '/forgot-password');
                   },
                   child: const Text(
                     '¿Olvidaste tu contraseña?',

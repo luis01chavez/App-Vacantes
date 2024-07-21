@@ -4,14 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:vacantes/api_service.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class UserRegisterScreen extends StatefulWidget {
+  const UserRegisterScreen({super.key});
 
   @override
-  RegisterScreenState createState() => RegisterScreenState();
+  UserRegisterScreenState createState() => UserRegisterScreenState();
 }
 
-class RegisterScreenState extends State<RegisterScreen> {
+class UserRegisterScreenState extends State<UserRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nombreController = TextEditingController();
   final _correoController = TextEditingController();
@@ -21,7 +21,6 @@ class RegisterScreenState extends State<RegisterScreen> {
   final _codigoVerificacionController = TextEditingController();
 
   bool _experiencia = false;
-  int? _selectedRol;
   int? _selectedEstado;
   int? _selectedMunicipio;
   int? _selectedInfoDivulgacion;
@@ -31,7 +30,6 @@ class RegisterScreenState extends State<RegisterScreen> {
   Timer? _timer;
   int _endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 180;
 
-  List<dynamic> _roles = [];
   List<dynamic> _estados = [];
   List<dynamic> _municipios = [];
   List<dynamic> _infoDivulgacion = [];
@@ -45,17 +43,15 @@ class RegisterScreenState extends State<RegisterScreen> {
 
   void _loadData() async {
     try {
-      final roles = await ApiService().getRoles();
       final estados = await ApiService().getEstados();
       final infoDivulgacion = await ApiService().getInfoDivulgacion();
 
       setState(() {
-        _roles = roles;
         _estados = estados;
         _infoDivulgacion = infoDivulgacion;
       });
     } catch (e) {
-      logger.e('No se pudieron cargar los datos: $e');
+      logger.e('Failed to load data: $e');
     }
   }
 
@@ -66,7 +62,7 @@ class RegisterScreenState extends State<RegisterScreen> {
         _municipios = municipios;
       });
     } catch (e) {
-      logger.e('Falló al cargar municipios: $e');
+      logger.e('Failed to load municipios: $e');
     }
   }
 
@@ -97,7 +93,7 @@ class RegisterScreenState extends State<RegisterScreen> {
         "telefono": _telefonoController.text,
         "experiencia": _experiencia,
         "fechaNacimiento": _fechaNacimientoController.text,
-        "rol": {"id": _selectedRol},
+        "rol": {"id": 2}, // Asignar rol id 2 (usuario)
         "estado": {"id": _selectedEstado},
         "municipio": {"id": _selectedMunicipio},
         "infoDivulgacion": {"id": _selectedInfoDivulgacion},
@@ -197,7 +193,6 @@ class RegisterScreenState extends State<RegisterScreen> {
         _fechaNacimientoController.clear();
         _codigoVerificacionController.clear();
         _experiencia = false;
-        _selectedRol = null;
         _selectedEstado = null;
         _selectedMunicipio = null;
         _selectedInfoDivulgacion = null;
@@ -218,6 +213,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Correo verificado con éxito')),
       );
+      Navigator.pushReplacementNamed(context, '/login');
     }).catchError((error) {
       setState(() {
         _verificationError = 'Código incorrecto o caducado';
@@ -246,7 +242,6 @@ class RegisterScreenState extends State<RegisterScreen> {
         _contrasenaController.text.isNotEmpty &&
         _telefonoController.text.isNotEmpty &&
         _fechaNacimientoController.text.isNotEmpty &&
-        _selectedRol != null &&
         _selectedEstado != null &&
         _selectedMunicipio != null &&
         _selectedInfoDivulgacion != null;
@@ -376,28 +371,6 @@ class RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
-                  value: _selectedRol,
-                  decoration: const InputDecoration(labelText: 'Rol'),
-                  items: _roles.map<DropdownMenuItem<int>>((role) {
-                    return DropdownMenuItem<int>(
-                      value: role['id'],
-                      child: Text(role['nombre']),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedRol = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Por favor seleccione un rol';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<int>(
                   value: _selectedEstado,
                   decoration: const InputDecoration(labelText: 'Estado'),
                   items: _estados.map<DropdownMenuItem<int>>((estado) {
@@ -433,7 +406,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           municipio['nombre'],
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
+                          maxLines: 2,
                         ),
                       ),
                     );
@@ -453,7 +426,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
                   value: _selectedInfoDivulgacion,
-                  decoration: const InputDecoration(labelText: '¿Cómo conociste la aplicación?'),
+                  decoration: const InputDecoration(labelText: 'Info Divulgación'),
                   items: _infoDivulgacion.map<DropdownMenuItem<int>>((info) {
                     return DropdownMenuItem<int>(
                       value: info['id'],
@@ -474,7 +447,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                   },
                   validator: (value) {
                     if (value == null) {
-                      return 'Por favor seleccione una opción';
+                      return 'Por favor seleccione una opción de info divulgación';
                     }
                     return null;
                   },
