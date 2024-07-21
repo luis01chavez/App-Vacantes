@@ -5,8 +5,11 @@ import 'package:vacantes/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Simulamos el estado de autenticación (por ejemplo, no está logueado).
+    const bool isLoggedIn = false;
+
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const JobOffersApp());
+    await tester.pumpWidget(const JobOffersApp(isLoggedIn: isLoggedIn));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

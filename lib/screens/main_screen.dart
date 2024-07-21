@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'job_offers_screen.dart';
 import 'create_job_screen.dart';
 import 'register_screen.dart';
@@ -15,11 +16,30 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final authToken = prefs.getString('authToken');
+    if (!mounted) return;
+
+    if (authToken == null) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const AuthScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
+  }
+
   static const List<Widget> _widgetOptions = <Widget>[
     JobOffersScreen(),
     CreateJobScreen(),
     RegisterScreen(),
-    AuthScreen(),
     ProfileScreen(),
   ];
 
@@ -46,10 +66,6 @@ class MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Registrarse',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Iniciar sesión',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),

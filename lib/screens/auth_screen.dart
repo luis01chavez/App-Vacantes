@@ -59,11 +59,6 @@ class LoginScreenState extends State<AuthScreen> {
     final userName = utf8.decode(userData['nombre'].toString().split(' ')[0].codeUnits);
 
     await prefs.setString('userName', userName);
-
-    // Reemplazar print statements con logger
-    logger.i('Token guardado: ${prefs.getString('authToken')}');
-    logger.i('User ID guardado: ${prefs.getString('userId')}');
-    logger.i('User Name guardado: ${prefs.getString('userName')}');
   }
 
   Map<String, dynamic> _parseJwt(String token) {
