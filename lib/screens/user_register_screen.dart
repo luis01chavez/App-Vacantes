@@ -406,7 +406,7 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                         child: Text(
                           municipio['nombre'],
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
+                          maxLines: 3,
                         ),
                       ),
                     );
@@ -426,7 +426,7 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
                   value: _selectedInfoDivulgacion,
-                  decoration: const InputDecoration(labelText: 'Info Divulgación'),
+                  decoration: const InputDecoration(labelText: '¿Cómo conociste la aplicación?'),
                   items: _infoDivulgacion.map<DropdownMenuItem<int>>((info) {
                     return DropdownMenuItem<int>(
                       value: info['id'],
