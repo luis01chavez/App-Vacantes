@@ -98,8 +98,10 @@ class ApiService {
       Uri.parse('$baseUrl/usuarios/reenviar-codigo?usuarioId=$usuarioId'),
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode == 500) {
       throw Exception('Fallo al reenviar el código de verificación');
+    }if (response.statusCode == 400) {
+      throw Exception('No se puede enviar un nuevo código, el anterior aún no caduca');
     }
   }
   
