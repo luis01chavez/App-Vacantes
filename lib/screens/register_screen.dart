@@ -28,6 +28,7 @@ class RegisterScreenState extends State<RegisterScreen> {
   bool _passwordVisible = false;
   bool _isButtonDisabled = true;
   bool _isLoading = false;
+  bool _acceptedPrivacyTerms = false;
   Timer? _timer;
   int _endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 180;
 
@@ -201,6 +202,7 @@ class RegisterScreenState extends State<RegisterScreen> {
         _selectedEstado = null;
         _selectedMunicipio = null;
         _selectedInfoDivulgacion = null;
+        _acceptedPrivacyTerms = false;
       });
     });
   }
@@ -249,7 +251,33 @@ class RegisterScreenState extends State<RegisterScreen> {
         _selectedRol != null &&
         _selectedEstado != null &&
         _selectedMunicipio != null &&
-        _selectedInfoDivulgacion != null;
+        _selectedInfoDivulgacion != null &&
+        _acceptedPrivacyTerms;
+  }
+
+  void _showPrivacyTerms(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Términos de privacidad'),
+          content: const SingleChildScrollView(
+            child: Text(
+              'Estos son los términos de privacidad genéricos. '
+              'Por favor, revise estos términos cuidadosamente antes de aceptar.',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Aceptar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -480,9 +508,10 @@ class RegisterScreenState extends State<RegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
+                const Text('¿Tienes experiencia en ventas?'),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Text('Experiencia: '),
                     Expanded(
                       child: ListTile(
                         title: const Text('Sí'),
@@ -512,6 +541,26 @@ class RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 16),
+                CheckboxListTile(
+                  value: _acceptedPrivacyTerms,
+                  onChanged: (value) {
+                    setState(() {
+                      _acceptedPrivacyTerms = value!;
+                    });
+                  },
+                  title: GestureDetector(
+                    onTap: () => _showPrivacyTerms(context),
+                    child: const Text(
+                      'Aceptar términos de privacidad',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                  controlAffinity: ListTileControlAffinity.leading,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
