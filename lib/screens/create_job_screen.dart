@@ -26,10 +26,11 @@ class CreateJobScreenState extends State<CreateJobScreen> {
   Uint8List? _imagenBytes;
   String _imagenBase64 = '';
   List<dynamic> _estados = [];
-  List<dynamic> _municipios = [];
   bool _isLoading = false;
   int? _selectedEstadoTemp;
   int? _selectedMunicipioTemp;
+
+  Map<int, List<dynamic>> _municipiosPorEstado = {};
 
   @override
   void initState() {
@@ -52,14 +53,14 @@ class CreateJobScreenState extends State<CreateJobScreen> {
 
   Future<void> _loadMunicipios(List<int> estadoIds) async {
     try {
-      List<dynamic> allMunicipios = [];
+      Map<int, List<dynamic>> municipiosPorEstado = {};
       for (var estadoId in estadoIds) {
         final municipios = await ApiService().getMunicipios(estadoId);
-        allMunicipios.addAll(municipios);
+        municipiosPorEstado[estadoId] = municipios;
       }
       if (mounted) {
         setState(() {
-          _municipios = allMunicipios;
+          _municipiosPorEstado = municipiosPorEstado;
         });
       }
     } catch (e) {
@@ -270,11 +271,12 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                         setState(() {
                           _selectedEstados.remove(estadoId);
                           _selectedMunicipios.removeWhere((municipioId) {
-                            final municipio = _municipios.firstWhere((municipio) => municipio['id'] == municipioId);
-                            return municipio['estado']['id'] == estadoId;
+                            final municipio = _municipiosPorEstado[estadoId]?.firstWhere((m) => m['id'] == municipioId, orElse: () => null);
+                            return municipio != null;
                           });
                           _selectedMunicipioTemp = null;
                           _formKey.currentState?.reset();
+                          _municipiosPorEstado.remove(estadoId);
                           _loadMunicipios(_selectedEstados);
                         });
                       },
@@ -286,18 +288,21 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                 DropdownButtonFormField<int>(
                   decoration: const InputDecoration(labelText: 'Selecciona un municipio'),
                   value: _selectedMunicipioTemp,
-                  items: _municipios.map<DropdownMenuItem<int>>((municipio) {
-                    return DropdownMenuItem<int>(
-                      value: municipio['id'],
-                      child: Container(
-                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                        child: Text(
-                          municipio['nombre'],
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
+                  items: _selectedEstados.expand((estadoId) {
+                    final municipios = _municipiosPorEstado[estadoId] ?? [];
+                    return municipios.map<DropdownMenuItem<int>>((municipio) {
+                      return DropdownMenuItem<int>(
+                        value: municipio['id'],
+                        child: Container(
+                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+                          child: Text(
+                            "${_estados.firstWhere((e) => e['id'] == estadoId)['nombre']}: ${municipio['nombre']}",
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                          ),
                         ),
-                      ),
-                    );
+                      );
+                    }).toList();
                   }).toList(),
                   onChanged: (value) {
                     if (value != null && !_selectedMunicipios.contains(value)) {
@@ -313,33 +318,61 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                   },
                 ),
                 const SizedBox(height: 8), // Espacio adicional
-                Wrap(
-                  spacing: 8.0,
-                  children: _selectedMunicipios.map((municipioId) {
-                    final municipio = _municipios.firstWhere((municipio) => municipio['id'] == municipioId);
-                    return SizedBox(
-                      child: Chip(
-                        label: Text(
-                          municipio['nombre'],
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                        ),
-                        onDeleted: () {
-                          setState(() {
-                            _selectedMunicipios.remove(municipioId);
-                          });
-                        },
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _selectedEstados.expand((estadoId) {
+                    final estado = _estados.firstWhere((estado) => estado['id'] == estadoId);
+                    final municipios = _selectedMunicipios.where((municipioId) {
+                      final municipio = _municipiosPorEstado[estadoId]?.firstWhere((m) => m['id'] == municipioId, orElse: () => null);
+                      return municipio != null;
+                    }).toList();
+                    return [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(estado['nombre'], style: const TextStyle(fontWeight: FontWeight.bold)),
                       ),
-                    );
+                      Wrap(
+                        spacing: 8.0,
+                        children: municipios.map((municipioId) {
+                          final municipio = _municipiosPorEstado[estadoId]?.firstWhere((m) => m['id'] == municipioId);
+                          return SizedBox(
+                            child: Chip(
+                              label: Text(
+                                municipio['nombre'],
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                              ),
+                              onDeleted: () {
+                                setState(() {
+                                  _selectedMunicipios.remove(municipioId);
+                                });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ];
                   }).toList(),
                 ),
-                const SizedBox(height: 20),
-                _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
+
+                Center(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0), // Padding adicional para que no toque los bordes
+                      child: ElevatedButton(
                         onPressed: _submitForm,
-                        child: const Text('Crear Empleo'),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0), // Aumenta el padding vertical para un botón más grande
+                          child: Text(
+                            'Crear Empleo',
+                            style: TextStyle(fontSize: 18), // Ajusta el tamaño del texto
+                          ),
+                        ),
                       ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
