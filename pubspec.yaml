@@ -35,6 +35,8 @@ dependencies:
   shared_preferences: ^2.0.6
   flutter_countdown_timer: ^4.1.0
   dart_jsonwebtoken: ^2.14.0
+  image_picker: ^1.1.2
+  intl: ^0.19.0
 
 
   # The following adds the Cupertino Icons font to your application.

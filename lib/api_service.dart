@@ -233,5 +233,46 @@ class ApiService {
       throw Exception('Código incorrecto o caducado');
     }
   }
+
+  Future<Map<String, dynamic>> createJob(Map<String, dynamic> jobData) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    if (token == null) {
+      throw Exception('Token no encontrado');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/empleos'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(jobData),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Error al crear empleo');
+    }
+  }
+
+  Future<List<dynamic>> getMunicipiosPorEstados(List<int> estadosIds) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/municipios/estados'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(estadosIds),
+      );
+      if (response.statusCode == 200) {
+        return json.decode(utf8.decode(response.bodyBytes));
+      } else {
+        throw Exception('No se pudieron cargar municipios');
+      }
+    } catch (e) {
+      logger.e('Error al obtener municipios: $e');
+      rethrow;
+    }
+  }
   
 }
