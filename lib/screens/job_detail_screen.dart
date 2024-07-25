@@ -29,7 +29,6 @@ class JobDetailScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Te has postulado exitosamente')),
       );
-      if (!context.mounted) return;
       Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     }
   }
@@ -43,26 +42,17 @@ class JobDetailScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Interacción registrada')),
       );
-      if (!context.mounted) return;
       Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     }
   }
 
   Future<void> _retirarPublicacion(int empleoId, BuildContext context) async {
-    try {
-      await ApiService().retirarPublicacion(empleoId);
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Publicación retirada exitosamente')),
-      );
-      if (!context.mounted) return;
-      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al retirar publicación: $e')),
-      );
-    }
+    await ApiService().retirarPublicacion(empleoId);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Publicación retirada exitosamente')),
+    );
+    Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
   }
 
   void _showFullScreenImage(BuildContext context, String imageBase64) {
@@ -91,6 +81,87 @@ class JobDetailScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showNoMeInteresaDialog(BuildContext context, int empleoId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('¿Estás seguro que este empleo no te interesa?'),
+          content: const Text(
+              'Una vez que des clic en el botón "No me interesa" ya no se te mostrará esta publicación y no podrás cambiar de opinión.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.green,
+              ),
+              child: const Text('Regresar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  await _noMeInteresa(empleoId, context);
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al registrar interacción: $e')),
+                  );
+                }
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.red,
+              ),
+              child: const Text('No me interesa'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showRetirarPublicacionDialog(BuildContext context, int empleoId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('¿Estás seguro de retirar la publicación?'),
+          content: const Text('Si retiras la publicación nadie podrá verla.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.green,
+              ),
+              child: const Text('Regresar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  await _retirarPublicacion(empleoId, context);
+                } catch (e) {
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al retirar publicación: $e')),
+                  );
+                }
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.red,
+              ),
+              child: const Text('Retirar publicación'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -156,15 +227,8 @@ class JobDetailScreen extends StatelessWidget {
                           if (userRole == 'admin')
                             Center(
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  try {
-                                    await _retirarPublicacion(jobDetail.id, context);
-                                  } catch (e) {
-                                    if (!context.mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error al retirar publicación: $e')),
-                                    );
-                                  }
+                                onPressed: () {
+                                  _showRetirarPublicacionDialog(context, jobDetail.id);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
@@ -197,15 +261,8 @@ class JobDetailScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 16),
                                 ElevatedButton(
-                                  onPressed: () async {
-                                    try {
-                                      await _noMeInteresa(jobDetail.id, context);
-                                    } catch (e) {
-                                      if (!context.mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Error al registrar interacción: $e')),
-                                      );
-                                    }
+                                  onPressed: () {
+                                    _showNoMeInteresaDialog(context, jobDetail.id);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
