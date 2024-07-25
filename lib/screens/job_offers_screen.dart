@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vacantes/api_service.dart';
 import 'package:vacantes/models/job_offer.dart';
+import 'job_detail_screen.dart'; // Asegúrate de importar la nueva pantalla
 
 class JobOffersScreen extends StatefulWidget {
   const JobOffersScreen({super.key});
@@ -114,26 +115,36 @@ class JobOfferCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(10.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              jobOffer.titulo,
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => JobDetailScreen(jobId: jobOffer.id),
             ),
-            const SizedBox(height: 5.0),
-            Text(
-              jobOffer.descripcion,
-              style: const TextStyle(
-                fontSize: 14.0,
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                jobOffer.titulo,
+                style: const TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 5.0),
+              Text(
+                jobOffer.descripcion,
+                style: const TextStyle(
+                  fontSize: 14.0,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

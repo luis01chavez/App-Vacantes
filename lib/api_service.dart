@@ -280,7 +280,7 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken');
     if (token == null) {
-      throw Exception('Usuario no encontrado');
+      throw Exception('Token no encontrado');
     }
 
     final response = await http.get(
@@ -296,6 +296,29 @@ class ApiService {
       return jobOffersJson.map((json) => JobOffer.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load job offers');
+    }
+  }
+
+  Future<JobDetail> fetchJobDetail(int jobId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    if (token == null) {
+      throw Exception('Token no encontrado');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/empleos/$jobId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jobDetailJson = json.decode(utf8.decode(response.bodyBytes));
+      return JobDetail.fromJson(jobDetailJson);
+    } else {
+      throw Exception('Failed to load job details');
     }
   }
 
