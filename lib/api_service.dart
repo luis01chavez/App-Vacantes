@@ -344,5 +344,61 @@ class ApiService {
       throw Exception('Error al obtener empleos por municipio');
     }
   }
+
+  Future<void> postularme(int empleoId, int usuarioId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    if (token == null) {
+      throw Exception('Token no encontrado');
+    }
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/postulaciones'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "empleo": {"id": empleoId},
+        "usuario": {"id": usuarioId},
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al postularse: ${response.body}');
+    }
+  }
+
+  Future<void> interactWithJob(int empleoId, int usuarioId, String tipoInteraccion) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/empleos/interacciones?empleoId=$empleoId&usuarioId=$usuarioId&tipoInteraccion=$tipoInteraccion'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al registrar interacción: ${response.body}');
+    }
+  }
+
+  Future<void> retirarPublicacion(int empleoId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    final response = await http.put(
+      Uri.parse('$baseUrl/empleos/$empleoId/estatus?estatus=INACTIVO'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al retirar publicación: ${response.body}');
+    }
+  }
   
 }

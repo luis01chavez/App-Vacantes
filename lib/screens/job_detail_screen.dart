@@ -20,6 +20,51 @@ class JobDetailScreen extends StatelessWidget {
     return prefs.getString('userRole') ?? '';
   }
 
+  Future<void> _postularme(int empleoId, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+    if (userId != null) {
+      await ApiService().postularme(empleoId, int.parse(userId));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Te has postulado exitosamente')),
+      );
+      if (!context.mounted) return;
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    }
+  }
+
+  Future<void> _noMeInteresa(int empleoId, BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+    if (userId != null) {
+      await ApiService().interactWithJob(empleoId, int.parse(userId), 'NO_ME_INTERESA');
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Interacción registrada')),
+      );
+      if (!context.mounted) return;
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    }
+  }
+
+  Future<void> _retirarPublicacion(int empleoId, BuildContext context) async {
+    try {
+      await ApiService().retirarPublicacion(empleoId);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Publicación retirada exitosamente')),
+      );
+      if (!context.mounted) return;
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al retirar publicación: $e')),
+      );
+    }
+  }
+
   void _showFullScreenImage(BuildContext context, String imageBase64) {
     showDialog(
       context: context,
@@ -111,8 +156,15 @@ class JobDetailScreen extends StatelessWidget {
                           if (userRole == 'admin')
                             Center(
                               child: ElevatedButton(
-                                onPressed: () {
-                                  // Acción para el botón "Retirar publicación"
+                                onPressed: () async {
+                                  try {
+                                    await _retirarPublicacion(jobDetail.id, context);
+                                  } catch (e) {
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error al retirar publicación: $e')),
+                                    );
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
@@ -127,8 +179,15 @@ class JobDetailScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                  onPressed: () {
-                                    // Acción para el botón "Postularme"
+                                  onPressed: () async {
+                                    try {
+                                      await _postularme(jobDetail.id, context);
+                                    } catch (e) {
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error al postularse: $e')),
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.green,
@@ -138,8 +197,15 @@ class JobDetailScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 16),
                                 ElevatedButton(
-                                  onPressed: () {
-                                    // Acción para el botón "No me interesa"
+                                  onPressed: () async {
+                                    try {
+                                      await _noMeInteresa(jobDetail.id, context);
+                                    } catch (e) {
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error al registrar interacción: $e')),
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
