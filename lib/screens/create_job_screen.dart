@@ -26,7 +26,6 @@ class CreateJobScreenState extends State<CreateJobScreen> {
   Uint8List? _imagenBytes;
   String _imagenBase64 = '';
   List<dynamic> _estados = [];
-  bool _isLoading = false;
   int? _selectedEstadoTemp;
   int? _selectedMunicipioTemp;
 
@@ -101,7 +100,6 @@ class CreateJobScreenState extends State<CreateJobScreen> {
   void _submitForm() async {
     if (_formKey.currentState!.validate() && _selectedEstados.isNotEmpty && _imagenBase64.isNotEmpty) {
       setState(() {
-        _isLoading = true;
       });
 
       final prefs = await SharedPreferences.getInstance();
@@ -134,7 +132,6 @@ class CreateJobScreenState extends State<CreateJobScreen> {
       } finally {
         if (mounted) {
           setState(() {
-            _isLoading = false;
           });
         }
       }

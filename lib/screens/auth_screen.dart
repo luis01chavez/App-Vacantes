@@ -57,8 +57,13 @@ class LoginScreenState extends State<AuthScreen> {
     final userId = payload['userId'].toString();
     final userData = await ApiService().getUserData(int.parse(userId));
     final userName = utf8.decode(userData['nombre'].toString().split(' ')[0].codeUnits);
+    final userRole = userData['rol']['nombre'];
+    final municipioId = userData['municipio']['id'].toString();
 
     await prefs.setString('userName', userName);
+    await prefs.setString('userRole', userRole); 
+    await prefs.setString('municipioId', municipioId.toString());
+
   }
 
   Map<String, dynamic> _parseJwt(String token) {

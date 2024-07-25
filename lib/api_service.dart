@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vacantes/models/job_offer.dart';
 import 'config.dart';
 
 final logger = Logger();
@@ -272,6 +273,52 @@ class ApiService {
     } catch (e) {
       logger.e('Error al obtener municipios: $e');
       rethrow;
+    }
+  }
+
+  Future<List<JobOffer>> fetchJobOffers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    if (token == null) {
+      throw Exception('Usuario no encontrado');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/empleos'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jobOffersJson = json.decode(utf8.decode(response.bodyBytes));
+      return jobOffersJson.map((json) => JobOffer.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load job offers');
+    }
+  }
+
+  Future<List<JobOffer>> getEmpleosPorMunicipio(int municipioId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    if (token == null) {
+      throw Exception('Token no encontrado');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/empleos/municipio/$municipioId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jobOffersJson = json.decode(utf8.decode(response.bodyBytes));
+      return jobOffersJson.map((json) => JobOffer.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al obtener empleos por municipio');
     }
   }
   
