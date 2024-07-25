@@ -37,6 +37,7 @@ dependencies:
   dart_jsonwebtoken: ^2.14.0
   image_picker: ^1.1.2
   intl: ^0.19.0
+  photo_view: ^0.14.0
 
 
   # The following adds the Cupertino Icons font to your application.
