@@ -47,12 +47,19 @@ class JobDetailScreen extends StatelessWidget {
   }
 
   Future<void> _retirarPublicacion(int empleoId, BuildContext context) async {
-    await ApiService().retirarPublicacion(empleoId);
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Publicación retirada exitosamente')),
-    );
-    Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    try {
+      await ApiService().retirarPublicacion(empleoId);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Publicación retirada')),
+      );
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al retirar publicación: $e')),
+      );
+    }
   }
 
   void _showFullScreenImage(BuildContext context, String imageBase64) {
@@ -84,84 +91,37 @@ class JobDetailScreen extends StatelessWidget {
     );
   }
 
-  void _showNoMeInteresaDialog(BuildContext context, int empleoId) {
+  void _showConfirmationDialog({
+    required BuildContext context,
+    required String title,
+    required String content,
+    required VoidCallback onConfirm,
+    required String confirmText,
+    required Color confirmColor,
+  }) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('¿Estás seguro que este empleo no te interesa?'),
-          content: const Text(
-              'Una vez que des clic en el botón "No me interesa" ya no se te mostrará esta publicación y no podrás cambiar de opinión.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,
-              ),
-              child: const Text('Regresar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                try {
-                  await _noMeInteresa(empleoId, context);
-                } catch (e) {
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error al registrar interacción: $e')),
-                  );
-                }
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,
-              ),
-              child: const Text('No me interesa'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showRetirarPublicacionDialog(BuildContext context, int empleoId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('¿Estás seguro de retirar la publicación?'),
-          content: const Text('Si retiras la publicación nadie podrá verla.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,
-              ),
-              child: const Text('Regresar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                try {
-                  await _retirarPublicacion(empleoId, context);
-                } catch (e) {
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error al retirar publicación: $e')),
-                  );
-                }
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,
-              ),
-              child: const Text('Retirar publicación'),
-            ),
-          ],
-        );
-      },
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Regresar', style: TextStyle(color: Colors.white)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onConfirm();
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: confirmColor),
+            child: Text(confirmText, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -228,7 +188,14 @@ class JobDetailScreen extends StatelessWidget {
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  _showRetirarPublicacionDialog(context, jobDetail.id);
+                                  _showConfirmationDialog(
+                                    context: context,
+                                    title: 'Retirar Publicación',
+                                    content: '¿Estas seguro de retirar la publicación? Si retiras la publicación nadie podrá verla',
+                                    onConfirm: () => _retirarPublicacion(jobDetail.id, context),
+                                    confirmText: 'Retirar',
+                                    confirmColor: Colors.red,
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
@@ -262,7 +229,14 @@ class JobDetailScreen extends StatelessWidget {
                                 const SizedBox(width: 16),
                                 ElevatedButton(
                                   onPressed: () {
-                                    _showNoMeInteresaDialog(context, jobDetail.id);
+                                    _showConfirmationDialog(
+                                      context: context,
+                                      title: 'No me interesa',
+                                      content: '¿Estas seguro que este empleo no te interesa? Una vez que des clic en el botón "No me interesa" ya no se te mostrará esta publicación y no podrás cambiar de opinión',
+                                      onConfirm: () => _noMeInteresa(jobDetail.id, context),
+                                      confirmText: 'No me interesa',
+                                      confirmColor: Colors.red,
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,

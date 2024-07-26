@@ -284,7 +284,7 @@ class ApiService {
     }
 
     final response = await http.get(
-      Uri.parse('$baseUrl/empleos'),
+      Uri.parse('$baseUrl/empleos/estatus?estatus=ACTIVO'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
