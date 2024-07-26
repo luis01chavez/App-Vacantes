@@ -26,10 +26,7 @@ class JobDetailScreen extends StatelessWidget {
     if (userId != null) {
       await ApiService().postularme(empleoId, int.parse(userId));
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Te has postulado exitosamente')),
-      );
-      Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+      _showPostulationDialog(context);
     }
   }
 
@@ -121,6 +118,58 @@ class JobDetailScreen extends StatelessWidget {
             child: Text(confirmText, style: const TextStyle(color: Colors.white)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showPostulationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // No permitir que se cierre al hacer clic fuera del diálogo
+      // ignore: deprecated_member_use
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false, // Deshabilitar botón de retroceso
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+          },
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '¡Mantente atento!',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Hemos recibido tu postulación y nos pondremos en contacto contigo por medio de tu correo electrónico o de tu número de celular registrados.',
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -15,11 +15,13 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  String? userRole;
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
+    _getUserRole();
   }
 
   Future<void> _checkLoginStatus() async {
@@ -36,12 +38,63 @@ class MainScreenState extends State<MainScreen> {
     }
   }
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    JobOffersScreen(),
-    CreateJobScreen(),
-    RegisterScreen(),
-    ProfileScreen(),
-  ];
+  Future<void> _getUserRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    final role = prefs.getString('userRole');
+    setState(() {
+      userRole = role;
+    });
+  }
+
+  List<Widget> _getWidgetOptions() {
+    if (userRole == 'admin') {
+      return const [
+        JobOffersScreen(),
+        CreateJobScreen(),
+        RegisterScreen(),
+        ProfileScreen(),
+      ];
+    } else {
+      return const [
+        JobOffersScreen(),
+        ProfileScreen(),
+      ];
+    }
+  }
+
+  List<BottomNavigationBarItem> _getBottomNavigationBarItems() {
+    if (userRole == 'admin') {
+      return const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.work),
+          label: 'Empleos',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.create),
+          label: 'Crear Empleo',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.account_circle),
+          label: 'Registrarse',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.account_circle),
+          label: 'Perfil',
+        ),
+      ];
+    } else {
+      return const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.work),
+          label: 'Empleos',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.account_circle),
+          label: 'Perfil',
+        ),
+      ];
+    }
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -51,27 +104,13 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final widgetOptions = _getWidgetOptions();
+    final bottomNavigationBarItems = _getBottomNavigationBarItems();
+
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: 'Empleos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.create),
-            label: 'Crear Empleo',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Registrarse',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Perfil',
-          ),
-        ],
+        items: bottomNavigationBarItems,
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
         unselectedItemColor: Colors.black,
