@@ -19,6 +19,8 @@ class JobOffersScreenState extends State<JobOffersScreen> {
   final int _pageSize = 10;
   bool _isLoading = false;
   bool _hasMore = true;
+  Set<int> viewedJobs = {}; // Mantiene el seguimiento de los empleos vistos
+  String? userRole;
 
   @override
   void initState() {
@@ -32,34 +34,36 @@ class JobOffersScreenState extends State<JobOffersScreen> {
     });
 
     final prefs = await SharedPreferences.getInstance();
-    final userRole = prefs.getString('userRole');
-    final municipioId = prefs.getString('municipioId');
+    final role = prefs.getString('userRole');
+    final userId = prefs.getString('userId');
+
+    setState(() {
+      userRole = role;
+    });
 
     try {
       List<JobOffer> fetchedJobOffers;
 
-      if (userRole == 'admin') {
+      if (role == 'admin') {
         fetchedJobOffers = await apiService.fetchJobOffers();
       } else {
-        fetchedJobOffers = await apiService.getEmpleosPorMunicipio(int.parse(municipioId!));
+        fetchedJobOffers = await apiService.getAvailableJobs(int.parse(userId!));
       }
 
-      if (mounted) {
-        setState(() {
-          allJobOffers = fetchedJobOffers;
-          _loadMoreJobOffers();
-          _isLoading = false;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        allJobOffers = fetchedJobOffers;
+        _loadMoreJobOffers();
+        _isLoading = false;
+      });
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load job offers: $e')),
-        );
-      }
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load job offers: $e')),
+      );
     }
   }
 
@@ -72,6 +76,32 @@ class JobOffersScreenState extends State<JobOffersScreen> {
         _hasMore = nextPageOffers.length == _pageSize;
       });
     }
+  }
+
+  Future<void> _onJobTap(JobOffer jobOffer) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userRole = prefs.getString('userRole');
+    final userId = prefs.getString('userId');
+
+    if (userRole == 'usuario' && userId != null && !viewedJobs.contains(jobOffer.id)) {
+      try {
+        await apiService.registrarVisto(int.parse(userId), jobOffer.id);
+        viewedJobs.add(jobOffer.id);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al registrar visto: $e')),
+        );
+      }
+    }
+
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => JobDetailScreen(jobId: jobOffer.id),
+      ),
+    );
   }
 
   @override
@@ -92,15 +122,28 @@ class JobOffersScreenState extends State<JobOffersScreen> {
         },
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: displayedJobOffers.length + (_hasMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == displayedJobOffers.length) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return JobOfferCard(jobOffer: displayedJobOffers[index]);
-                },
-              ),
+            : displayedJobOffers.isEmpty
+                ? Center(
+                    child: Text(
+                      userRole == 'admin'
+                          ? 'No hay publicaciones de empleos activas.'
+                          : 'Lo sentimos, por el momento no tenemos empleos disponibles en tu municipio',
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: displayedJobOffers.length + (_hasMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == displayedJobOffers.length) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return JobOfferCard(
+                        jobOffer: displayedJobOffers[index],
+                        onTap: () => _onJobTap(displayedJobOffers[index]),
+                      );
+                    },
+                  ),
       ),
     );
   }
@@ -108,22 +151,16 @@ class JobOffersScreenState extends State<JobOffersScreen> {
 
 class JobOfferCard extends StatelessWidget {
   final JobOffer jobOffer;
+  final VoidCallback onTap;
 
-  const JobOfferCard({super.key, required this.jobOffer});
+  const JobOfferCard({super.key, required this.jobOffer, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(10.0),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => JobDetailScreen(jobId: jobOffer.id),
-            ),
-          );
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

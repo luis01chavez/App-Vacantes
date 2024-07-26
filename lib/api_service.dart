@@ -322,7 +322,7 @@ class ApiService {
     }
   }
 
-  Future<List<JobOffer>> getEmpleosPorMunicipio(int municipioId) async {
+  Future<List<JobOffer>> getAvailableJobs(int userId) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken');
     if (token == null) {
@@ -330,7 +330,7 @@ class ApiService {
     }
 
     final response = await http.get(
-      Uri.parse('$baseUrl/empleos/municipio/$municipioId'),
+      Uri.parse('$baseUrl/empleos/disponibles/$userId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -341,7 +341,7 @@ class ApiService {
       final List<dynamic> jobOffersJson = json.decode(utf8.decode(response.bodyBytes));
       return jobOffersJson.map((json) => JobOffer.fromJson(json)).toList();
     } else {
-      throw Exception('Error al obtener empleos por municipio');
+      throw Exception('Error al obtener empleos disponibles');
     }
   }
 
@@ -401,4 +401,20 @@ class ApiService {
     }
   }
   
+  Future<void> registrarVisto(int userId, int empleoId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    final response = await http.post(
+      Uri.parse('$baseUrl/empleos/$userId/visto/$empleoId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al registrar visto: ${response.body}');
+    }
+  }
+
 }
