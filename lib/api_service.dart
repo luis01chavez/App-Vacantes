@@ -417,4 +417,21 @@ class ApiService {
     }
   }
 
+  Future<List<JobOffer>> searchJobOffers(String query, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/empleos/buscar?nombre=$query'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jobOffersJson = json.decode(utf8.decode(response.bodyBytes));
+      return jobOffersJson.map((json) => JobOffer.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al buscar empleos');
+    }
+  }
+
 }

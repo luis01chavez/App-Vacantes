@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vacantes/api_service.dart';
 import 'package:vacantes/models/job_offer.dart';
-import 'job_detail_screen.dart'; // Asegúrate de importar la nueva pantalla
+import 'job_detail_screen.dart';
 
 class JobOffersScreen extends StatefulWidget {
   const JobOffersScreen({super.key});
@@ -19,8 +19,12 @@ class JobOffersScreenState extends State<JobOffersScreen> {
   final int _pageSize = 10;
   bool _isLoading = false;
   bool _hasMore = true;
-  Set<int> viewedJobs = {}; // Mantiene el seguimiento de los empleos vistos
+  Set<int> viewedJobs = {};
   String? userRole;
+  String searchQuery = '';
+  bool isSearching = false;
+  TextEditingController searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode(); // FocusNode para la barra de búsqueda
 
   @override
   void initState() {
@@ -31,6 +35,9 @@ class JobOffersScreenState extends State<JobOffersScreen> {
   Future<void> _fetchJobOffers() async {
     setState(() {
       _isLoading = true;
+      _hasMore = true;
+      _currentPage = 0;
+      displayedJobOffers.clear();
     });
 
     final prefs = await SharedPreferences.getInstance();
@@ -39,6 +46,7 @@ class JobOffersScreenState extends State<JobOffersScreen> {
 
     setState(() {
       userRole = role;
+      isSearching = false;
     });
 
     try {
@@ -63,6 +71,41 @@ class JobOffersScreenState extends State<JobOffersScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load job offers: $e')),
+      );
+    }
+  }
+
+  Future<void> _searchJobOffers(String query) async {
+    setState(() {
+      _isLoading = true;
+      isSearching = true;
+    });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('authToken');
+
+      if (token == null) {
+        throw Exception('Token no encontrado');
+      }
+
+      final response = await apiService.searchJobOffers(query, token);
+
+      if (!mounted) return;
+      setState(() {
+        allJobOffers = response;
+        displayedJobOffers = allJobOffers;
+        _isLoading = false;
+        _hasMore = false;
+      });
+      FocusScope.of(context).unfocus();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al buscar empleos: $e')),
       );
     }
   }
@@ -101,6 +144,71 @@ class JobOffersScreenState extends State<JobOffersScreen> {
       MaterialPageRoute(
         builder: (context) => JobDetailScreen(jobId: jobOffer.id),
       ),
+    ).then((_) {
+      // Refrescar la lista de empleos al regresar
+      if (isSearching) {
+        _searchJobOffers(searchQuery);
+      } else {
+        _fetchJobOffers();
+      }
+      _searchFocusNode.unfocus(); // Asegurarse de que la barra de búsqueda no esté en foco
+    });
+  }
+
+  Widget _buildSearchField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextField(
+        focusNode: _searchFocusNode, // Asignar el FocusNode
+        controller: searchController,
+        decoration: InputDecoration(
+          hintText: 'Buscar empleo por nombre...',
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          suffixIcon: isSearching
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    setState(() {
+                      searchQuery = '';
+                      searchController.clear();
+                      FocusScope.of(context).unfocus();
+                      _fetchJobOffers();
+                    });
+                  },
+                )
+              : IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    if (searchQuery.isNotEmpty) {
+                      _searchJobOffers(searchQuery);
+                      FocusScope.of(context).unfocus();
+                    }
+                  },
+                ),
+        ),
+        onChanged: (value) {
+          setState(() {
+            searchQuery = value;
+          });
+        },
+        onSubmitted: (value) {
+          if (value.isNotEmpty) {
+            _searchJobOffers(value);
+            FocusScope.of(context).unfocus();
+          }
+        },
+      ),
     );
   }
 
@@ -109,6 +217,15 @@ class JobOffersScreenState extends State<JobOffersScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ofertas de Empleo'),
+        bottom: userRole == 'admin'
+            ? PreferredSize(
+                preferredSize: const Size.fromHeight(60.0),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: _buildSearchField(),
+                ),
+              )
+            : null,
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (scrollNotification) {
@@ -127,7 +244,9 @@ class JobOffersScreenState extends State<JobOffersScreen> {
                     child: Text(
                       userRole == 'admin'
                           ? 'No hay publicaciones de empleos activas.'
-                          : 'Lo sentimos, por el momento no tenemos empleos disponibles en tu municipio',
+                          : isSearching
+                              ? 'Ningún empleo disponible bajo ese nombre'
+                              : 'Lo sentimos, por el momento no tenemos disponibles empleos en tu municipio',
                       style: const TextStyle(color: Colors.black, fontSize: 18),
                       textAlign: TextAlign.center,
                     ),
@@ -170,15 +289,13 @@ class JobOfferCard extends StatelessWidget {
                 jobOffer.titulo,
                 style: const TextStyle(
                   fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                ),
+                  fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 5.0),
               Text(
                 jobOffer.descripcion,
                 style: const TextStyle(
-                  fontSize: 14.0,
-                ),
+                  fontSize: 14.0),
               ),
             ],
           ),
