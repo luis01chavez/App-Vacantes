@@ -37,7 +37,7 @@ class JobDetailScreen extends StatelessWidget {
       await ApiService().interactWithJob(empleoId, int.parse(userId), 'NO_ME_INTERESA');
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Interacción registrada')),
+        const SnackBar(content: Text('¡Sigue Explorando!')),
       );
       Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     }
@@ -62,7 +62,7 @@ class JobDetailScreen extends StatelessWidget {
   void _showFullScreenImage(BuildContext context, String imageBase64) {
     showDialog(
       context: context,
-      barrierDismissible: true, // Permitir que se cierre al hacer clic fuera del diálogo
+      barrierDismissible: true, 
       builder: (context) => GestureDetector(
         onTap: () => Navigator.of(context).pop(),
         child: Dialog(
@@ -125,7 +125,7 @@ class JobDetailScreen extends StatelessWidget {
   void _showPostulationDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false, // No permitir que se cierre al hacer clic fuera del diálogo
+      barrierDismissible: false,
       // ignore: deprecated_member_use
       builder: (context) => WillPopScope(
         onWillPop: () async => false, // Deshabilitar botón de retroceso
@@ -225,7 +225,7 @@ class JobDetailScreen extends StatelessWidget {
                             GestureDetector(
                               onTap: () => _showFullScreenImage(context, jobDetail.imagen),
                               child: Container(
-                                color: Colors.transparent, // Fondo transparente detrás de la imagen
+                                color: Colors.transparent, 
                                 child: Image.memory(
                                   base64Decode(jobDetail.imagen),
                                   fit: BoxFit.cover,
@@ -280,8 +280,8 @@ class JobDetailScreen extends StatelessWidget {
                                   onPressed: () {
                                     _showConfirmationDialog(
                                       context: context,
-                                      title: 'No me interesa',
-                                      content: '¿Estas seguro que este empleo no te interesa? Una vez que des clic en el botón "No me interesa" ya no se te mostrará esta publicación y no podrás cambiar de opinión',
+                                      title: '¿Estas seguro que este empleo no te interesa?',
+                                      content: 'Una vez que des clic en el botón "No me interesa" ya no se te mostrará esta publicación y no podrás cambiar de opinión',
                                       onConfirm: () => _noMeInteresa(jobDetail.id, context),
                                       confirmText: 'No me interesa',
                                       confirmColor: Colors.red,

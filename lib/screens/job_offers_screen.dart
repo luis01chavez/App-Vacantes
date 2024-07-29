@@ -19,6 +19,7 @@ class JobOffersScreenState extends State<JobOffersScreen> {
   final int _pageSize = 10;
   bool _isLoading = false;
   bool _hasMore = true;
+  bool isUserVerified = true;
   Set<int> viewedJobs = {};
   String? userRole;
   String searchQuery = '';
@@ -29,7 +30,33 @@ class JobOffersScreenState extends State<JobOffersScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchJobOffers();
+    _checkUserVerification();
+  }
+
+  Future<void> _checkUserVerification() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('userId');
+    if (userId != null) {
+      try {
+        final userData = await apiService.getUserData(int.parse(userId));
+        if (!mounted) return;
+        setState(() {
+          isUserVerified = userData['correoVerificado'];
+          userRole = userData['rol']['nombre'];
+        });
+        if (isUserVerified) {
+          _fetchJobOffers();
+        }
+      } catch (e) {
+        if (!mounted) return;
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al verificar el usuario: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _fetchJobOffers() async {
@@ -145,13 +172,12 @@ class JobOffersScreenState extends State<JobOffersScreen> {
         builder: (context) => JobDetailScreen(jobId: jobOffer.id),
       ),
     ).then((_) {
-      // Refrescar la lista de empleos al regresar
       if (isSearching) {
         _searchJobOffers(searchQuery);
       } else {
         _fetchJobOffers();
       }
-      _searchFocusNode.unfocus(); // Asegurarse de que la barra de búsqueda no esté en foco
+      _searchFocusNode.unfocus();
     });
   }
 
@@ -169,7 +195,7 @@ class JobOffersScreenState extends State<JobOffersScreen> {
         ],
       ),
       child: TextField(
-        focusNode: _searchFocusNode, // Asignar el FocusNode
+        focusNode: _searchFocusNode, 
         controller: searchController,
         decoration: InputDecoration(
           hintText: 'Buscar empleo por nombre...',
@@ -227,43 +253,51 @@ class JobOffersScreenState extends State<JobOffersScreen> {
               )
             : null,
       ),
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (scrollNotification) {
-          if (scrollNotification is ScrollEndNotification &&
-              scrollNotification.metrics.extentAfter == 0 &&
-              !_isLoading &&
-              _hasMore) {
-            _loadMoreJobOffers();
-          }
-          return false;
-        },
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : displayedJobOffers.isEmpty
-                ? Center(
-                    child: Text(
-                      userRole == 'admin'
-                          ? 'No hay publicaciones de empleos activas.'
-                          : isSearching
-                              ? 'Ningún empleo disponible bajo ese nombre'
-                              : 'Lo sentimos, por el momento no tenemos disponibles empleos en tu municipio',
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: displayedJobOffers.length + (_hasMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == displayedJobOffers.length) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      return JobOfferCard(
-                        jobOffer: displayedJobOffers[index],
-                        onTap: () => _onJobTap(displayedJobOffers[index]),
-                      );
-                    },
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : !isUserVerified
+              ? const Center(
+                  child: Text(
+                    'Para poder ver los empleos disponibles en tu municipio primero debes verificar tu correo electrónico en la pantalla de Perfil',
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                    textAlign: TextAlign.center,
                   ),
-      ),
+                )
+              : NotificationListener<ScrollNotification>(
+                  onNotification: (scrollNotification) {
+                    if (scrollNotification is ScrollEndNotification &&
+                        scrollNotification.metrics.extentAfter == 0 &&
+                        !_isLoading &&
+                        _hasMore) {
+                      _loadMoreJobOffers();
+                    }
+                    return false;
+                  },
+                  child: displayedJobOffers.isEmpty
+                      ? Center(
+                          child: Text(
+                            userRole == 'admin'
+                                ? 'No hay publicaciones de empleos activas.'
+                                : isSearching
+                                    ? 'Ningún empleo disponible bajo ese nombre'
+                                    : 'Lo sentimos, por el momento no tenemos empleos disponibles en tu municipio, pero sigue atento',
+                            style: const TextStyle(color: Colors.black, fontSize: 18),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: displayedJobOffers.length + (_hasMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index == displayedJobOffers.length) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            return JobOfferCard(
+                              jobOffer: displayedJobOffers[index],
+                              onTap: () => _onJobTap(displayedJobOffers[index]),
+                            );
+                          },
+                        ),
+                ),
     );
   }
 }
@@ -289,13 +323,15 @@ class JobOfferCard extends StatelessWidget {
                 jobOffer.titulo,
                 style: const TextStyle(
                   fontSize: 18.0,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 5.0),
               Text(
                 jobOffer.descripcion,
                 style: const TextStyle(
-                  fontSize: 14.0),
+                  fontSize: 14.0,
+                ),
               ),
             ],
           ),
