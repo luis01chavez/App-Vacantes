@@ -506,13 +506,13 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                       child: TextFormField(
                         controller: _fechaNacimientoController,
                         decoration: const InputDecoration(
-                          labelText: 'Fecha de Nacimiento (YYYY-MM-DD)',
+                          labelText: 'Fecha de Nacimiento (Año-mes-día)',
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingrese su fecha de nacimiento';
                           } else if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value)) {
-                            return 'Ingresa tu fecha de nacimiento con el formato YYYY-MM-DD';
+                            return 'Ingresa tu fecha de nacimiento con el formato Año-mes-día';
                           }
                           return null;
                         },

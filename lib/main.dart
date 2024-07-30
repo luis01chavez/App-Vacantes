@@ -9,6 +9,7 @@ import 'screens/register_screen.dart';
 import 'screens/edit_profile_screen.dart';
 import 'screens/forgot_password.dart';
 import 'screens/user_register_screen.dart';
+import 'screens/nosotros_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,7 @@ class JobOffersApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: isLoggedIn ? '/' : '/login',
+      initialRoute: isLoggedIn ? '/' : '/nosotros',
       routes: {
         '/': (context) => const MainScreen(),
         '/login': (context) => const AuthScreen(),
@@ -45,6 +46,7 @@ class JobOffersApp extends StatelessWidget {
         '/profile': (context) => const ProfileScreen(),
         '/editProfile': (context) => const EditProfileScreen(),
         '/forgot-password': (context) => const ForgotPasswordScreen(),
+        '/nosotros': (context) => const NosotrosScreen(),
       },
     );
   }

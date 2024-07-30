@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vacantes/screens/nosotros_screen.dart';
 import 'job_offers_screen.dart';
 import 'create_job_screen.dart';
 import 'register_screen.dart';
-import 'auth_screen.dart';
 import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class MainScreenState extends State<MainScreen> {
     if (authToken == null) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const AuthScreen()),
+        MaterialPageRoute(builder: (context) => const NosotrosScreen()),
         (Route<dynamic> route) => false,
       );
     }
