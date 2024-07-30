@@ -15,7 +15,9 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nombreController = TextEditingController();
   final _correoController = TextEditingController();
+  final _confirmCorreoController = TextEditingController();
   final _contrasenaController = TextEditingController();
+  final _confirmContrasenaController = TextEditingController();
   final _telefonoController = TextEditingController();
   final _fechaNacimientoController = TextEditingController();
   final _codigoVerificacionController = TextEditingController();
@@ -25,9 +27,12 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
   int? _selectedMunicipio;
   int? _selectedInfoDivulgacion;
   bool _passwordVisible = false;
+  bool _confirmPasswordVisible = false;
   bool _isButtonDisabled = true;
   bool _isLoading = false;
   bool _acceptedPrivacyTerms = false;
+  bool _confirmCorreoTouched = false;
+  bool _confirmContrasenaTouched = false;
   Timer? _timer;
   int _endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 180;
 
@@ -35,6 +40,8 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
   List<dynamic> _municipios = [];
   List<dynamic> _infoDivulgacion = [];
   String? _verificationError;
+  String? _correoError;
+  String? _contrasenaError;
 
   @override
   void initState() {
@@ -189,7 +196,9 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
         _formKey.currentState!.reset();
         _nombreController.clear();
         _correoController.clear();
+        _confirmCorreoController.clear();
         _contrasenaController.clear();
+        _confirmContrasenaController.clear();
         _telefonoController.clear();
         _fechaNacimientoController.clear();
         _codigoVerificacionController.clear();
@@ -241,13 +250,37 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
   bool _isFormValid() {
     return _nombreController.text.isNotEmpty &&
         _correoController.text.isNotEmpty &&
+        _confirmCorreoController.text.isNotEmpty &&
+        _correoController.text == _confirmCorreoController.text &&
         _contrasenaController.text.isNotEmpty &&
+        _confirmContrasenaController.text.isNotEmpty &&
+        _contrasenaController.text == _confirmContrasenaController.text &&
         _telefonoController.text.isNotEmpty &&
         _fechaNacimientoController.text.isNotEmpty &&
         _selectedEstado != null &&
         _selectedMunicipio != null &&
         _selectedInfoDivulgacion != null &&
         _acceptedPrivacyTerms;
+  }
+
+  void _checkCorreoMatch() {
+    setState(() {
+      if (_correoController.text != _confirmCorreoController.text) {
+        _correoError = 'Los correos no coinciden';
+      } else {
+        _correoError = null;
+      }
+    });
+  }
+
+  void _checkContrasenaMatch() {
+    setState(() {
+      if (_contrasenaController.text != _confirmContrasenaController.text) {
+        _contrasenaError = 'Las contraseñas no coinciden';
+      } else {
+        _contrasenaError = null;
+      }
+    });
   }
 
   void _showPrivacyTerms(BuildContext context) {
@@ -279,7 +312,9 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
   void dispose() {
     _nombreController.dispose();
     _correoController.dispose();
+    _confirmCorreoController.dispose();
     _contrasenaController.dispose();
+    _confirmContrasenaController.dispose();
     _telefonoController.dispose();
     _fechaNacimientoController.dispose();
     _codigoVerificacionController.dispose();
@@ -323,8 +358,48 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                     }
                     return null;
                   },
-                  onChanged: (value) => setState(() {}),
+                  onChanged: (value) {
+                    setState(() {
+                      _checkCorreoMatch();
+                    });
+                  },
                 ),
+                const SizedBox(height: 16),
+                Focus(
+                  onFocusChange: (hasFocus) {
+                    if (!hasFocus) {
+                      setState(() {
+                        _confirmCorreoTouched = true;
+                        _checkCorreoMatch();
+                      });
+                    }
+                  },
+                  child: TextFormField(
+                    controller: _confirmCorreoController,
+                    decoration: const InputDecoration(labelText: 'Confirmar Correo'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor confirme su correo';
+                      } else if (value != _correoController.text) {
+                        return 'Los correos no coinciden';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        _checkCorreoMatch();
+                      });
+                    },
+                  ),
+                ),
+                if (_confirmCorreoTouched && _correoError != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      _correoError!,
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _contrasenaController,
@@ -350,8 +425,61 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                     }
                     return null;
                   },
-                  onChanged: (value) => setState(() {}),
+                  onChanged: (value) {
+                    setState(() {
+                      _checkContrasenaMatch();
+                    });
+                  },
                 ),
+                const SizedBox(height: 16),
+                Focus(
+                  onFocusChange: (hasFocus) {
+                    if (!hasFocus) {
+                      setState(() {
+                        _confirmContrasenaTouched = true;
+                        _checkContrasenaMatch();
+                      });
+                    }
+                  },
+                  child: TextFormField(
+                    controller: _confirmContrasenaController,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar Contraseña',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _confirmPasswordVisible = !_confirmPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    obscureText: !_confirmPasswordVisible,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor confirme su contraseña';
+                      } else if (value != _contrasenaController.text) {
+                        return 'Las contraseñas no coinciden';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        _checkContrasenaMatch();
+                      });
+                    },
+                  ),
+                ),
+                if (_confirmContrasenaTouched && _contrasenaError != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      _contrasenaError!,
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _telefonoController,
@@ -481,7 +609,7 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                const Text('¿Tienes experiencia en ventas?'),
+                const Text('¿Tienes experiencia trabajando en tiendas departamentales? Como Palacio de Hierro, Liverpool, Coppel, Sears, etc'),
                 const SizedBox(height: 8),
                 Row(
                   children: [
