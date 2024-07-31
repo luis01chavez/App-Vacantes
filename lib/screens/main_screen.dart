@@ -112,7 +112,7 @@ class MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: bottomNavigationBarItems,
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: const Color.fromARGB(255, 68, 202, 255),
         unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),

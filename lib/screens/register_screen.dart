@@ -165,7 +165,18 @@ class RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _isButtonDisabled ? null : () => _resendVerificationCode(userId, setState),
-                    child: const Text('Enviar código de nuevo'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    child: _isButtonDisabled
+                        ? const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                        : const Text('Enviar código de nuevo'),
                   ),
                   const SizedBox(height: 8),
                   CountdownTimer(
@@ -337,8 +348,10 @@ class RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registrarse'),
+        backgroundColor: Colors.greenAccent,
       ),
-      body: Padding(
+      body: Container(
+        color: Colors.white,
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -347,7 +360,19 @@ class RegisterScreenState extends State<RegisterScreen> {
               children: [
                 TextFormField(
                   controller: _nombreController,
-                  decoration: const InputDecoration(labelText: 'Nombre'),
+                  decoration: InputDecoration(
+                    labelText: 'Nombre',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingrese su nombre';
@@ -359,7 +384,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _correoController,
-                  decoration: const InputDecoration(labelText: 'Correo'),
+                  decoration: InputDecoration(
+                    labelText: 'Correo',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingrese su correo';
@@ -386,7 +423,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                   },
                   child: TextFormField(
                     controller: _confirmCorreoController,
-                    decoration: const InputDecoration(labelText: 'Confirmar Correo'),
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar Correo',
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor confirme su correo';
@@ -424,6 +473,16 @@ class RegisterScreenState extends State<RegisterScreen> {
                           _passwordVisible = !_passwordVisible;
                         });
                       },
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
                   obscureText: !_passwordVisible,
@@ -465,6 +524,16 @@ class RegisterScreenState extends State<RegisterScreen> {
                           });
                         },
                       ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
                     ),
                     obscureText: !_confirmPasswordVisible,
                     validator: (value) {
@@ -493,7 +562,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _telefonoController,
-                  decoration: const InputDecoration(labelText: 'Teléfono'),
+                  decoration: InputDecoration(
+                    labelText: 'Teléfono',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
@@ -515,8 +596,18 @@ class RegisterScreenState extends State<RegisterScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _fechaNacimientoController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Fecha de Nacimiento (Año-mes-día)',
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -538,7 +629,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
                   value: _selectedRol,
-                  decoration: const InputDecoration(labelText: 'Rol'),
+                  decoration: InputDecoration(
+                    labelText: 'Rol',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   items: _roles.map<DropdownMenuItem<int>>((role) {
                     return DropdownMenuItem<int>(
                       value: role['id'],
@@ -560,7 +663,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
                   value: _selectedEstado,
-                  decoration: const InputDecoration(labelText: 'Estado'),
+                  decoration: InputDecoration(
+                    labelText: 'Estado',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   items: _estados.map<DropdownMenuItem<int>>((estado) {
                     return DropdownMenuItem<int>(
                       value: estado['id'],
@@ -585,7 +700,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
                   value: _selectedMunicipio,
-                  decoration: const InputDecoration(labelText: 'Municipio'),
+                  decoration: InputDecoration(
+                    labelText: 'Municipio',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   items: _municipios.map<DropdownMenuItem<int>>((municipio) {
                     return DropdownMenuItem<int>(
                       value: municipio['id'],
@@ -614,7 +741,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<int>(
                   value: _selectedInfoDivulgacion,
-                  decoration: const InputDecoration(labelText: '¿Cómo conociste la aplicación?'),
+                  decoration: InputDecoration(
+                    labelText: '¿Cómo conociste la aplicación?',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   items: _infoDivulgacion.map<DropdownMenuItem<int>>((info) {
                     return DropdownMenuItem<int>(
                       value: info['id'],
@@ -688,8 +827,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                     child: const Text(
                       'Aceptar términos de privacidad',
                       style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Colors.blue,
+                        color: Color.fromARGB(255, 68, 202, 255),
                       ),
                     ),
                   ),
@@ -699,8 +837,12 @@ class RegisterScreenState extends State<RegisterScreen> {
                 ElevatedButton(
                   onPressed: _isFormValid() ? _submitForm : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isFormValid() ? Colors.blue : Colors.grey,
-                    foregroundColor: Colors.black,
+                    backgroundColor: _isFormValid() ? const Color.fromARGB(255, 68, 202, 255) : Colors.grey,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator(
@@ -708,7 +850,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                         )
                       : const Text(
                           'Registrarse',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(fontSize: 18),
                         ),
                 ),
               ],

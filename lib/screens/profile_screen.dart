@@ -23,6 +23,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   final _codigoVerificacionController = TextEditingController();
   String? _verificationError;
   bool _isButtonDisabled = true;
+  bool _isResendingCode = false;
 
   @override
   void initState() {
@@ -89,6 +90,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text('Ingrese el código de verificación que recibió por correo.'),
+                  const SizedBox(height: 20),
                   TextField(
                     controller: _codigoVerificacionController,
                     keyboardType: TextInputType.number,
@@ -98,6 +100,18 @@ class ProfileScreenState extends State<ProfileScreen> {
                         _verifyEmail(userId, value, setState);
                       }
                     },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   if (_verificationError != null)
@@ -107,8 +121,22 @@ class ProfileScreenState extends State<ProfileScreen> {
                     ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: _isButtonDisabled ? null : () => _resendVerificationCode(userId, setState),
-                    child: const Text('Enviar código de nuevo'),
+                    onPressed: _isButtonDisabled || _isResendingCode
+                        ? null
+                        : () => _resendVerificationCode(userId, setState),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    child: _isResendingCode
+                        ? const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                        : const Text('Enviar código de nuevo'),
                   ),
                   const SizedBox(height: 8),
                   CountdownTimer(
@@ -159,6 +187,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _resendVerificationCode(int userId, StateSetter setState) {
     setState(() {
+      _isResendingCode = true;
     });
 
     ApiService().resendVerificationCode(userId).then((_) {
@@ -167,12 +196,14 @@ class ProfileScreenState extends State<ProfileScreen> {
       );
       _startTimer(DateTime.now().millisecondsSinceEpoch + 1000 * 180);
       setState(() {
+        _isResendingCode = false;
       });
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fallo al reenviar código: $error')),
       );
       setState(() {
+        _isResendingCode = false;
       });
     });
   }
@@ -219,6 +250,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Perfil'),
+          backgroundColor: Colors.greenAccent,
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -229,87 +261,32 @@ class ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perfil'),
+        backgroundColor: Colors.greenAccent,
       ),
       body: Stack(
         children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '¡Hola $_firstName!',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+          Container(
+            color: Colors.white,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/logo.png',
+                      height: 100,
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 7,
-                          offset: const Offset(4, 4),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const EditProfileScreen(),
-                          ),
-                        );
-                        _loadUserName(); // Reload the name after editing profile
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: const Text(
-                        'Mis datos',
-                        style: TextStyle(fontSize: 18),
+                    const SizedBox(height: 20),
+                    Text(
+                      '¡Hola $_firstName!',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 1,
-                          blurRadius: 7,
-                          offset: const Offset(4, 4),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: _logout,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: const Text(
-                        'Cerrar sesión',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  if (!_correoVerificado)
+                    const SizedBox(height: 20),
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -324,25 +301,95 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: ElevatedButton(
                         onPressed: () async {
-                          final prefs = await SharedPreferences.getInstance();
-                          final userId = prefs.getString('userId');
-                          if (userId != null) {
-                            _showVerificationDialog(int.parse(userId));
-                          }
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditProfileScreen(),
+                            ),
+                          );
+                          _loadUserName(); // Reload the name after editing profile
                         },
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
                         child: const Text(
-                          'Verificar correo',
+                          'Mis datos',
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
                     ),
-                ],
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 1,
+                            blurRadius: 7,
+                            offset: const Offset(4, 4),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: _logout,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: const Text(
+                          'Cerrar sesión',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    if (!_correoVerificado)
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 7,
+                              offset: const Offset(4, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            final userId = prefs.getString('userId');
+                            if (userId != null) {
+                              _showVerificationDialog(int.parse(userId));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: const Text(
+                            'Verificar correo',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

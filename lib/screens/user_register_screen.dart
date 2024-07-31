@@ -327,61 +327,68 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registrarse'),
+        backgroundColor: Colors.greenAccent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _nombreController,
-                  decoration: const InputDecoration(labelText: 'Nombre'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingrese su nombre';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) => setState(() {}),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _correoController,
-                  decoration: const InputDecoration(labelText: 'Correo'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingrese su correo';
-                    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Por favor ingrese un correo válido';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      _checkCorreoMatch();
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                Focus(
-                  onFocusChange: (hasFocus) {
-                    if (!hasFocus) {
-                      setState(() {
-                        _confirmCorreoTouched = true;
-                        _checkCorreoMatch();
-                      });
-                    }
-                  },
-                  child: TextFormField(
-                    controller: _confirmCorreoController,
-                    decoration: const InputDecoration(labelText: 'Confirmar Correo'),
+      body: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _nombreController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor confirme su correo';
-                      } else if (value != _correoController.text) {
-                        return 'Los correos no coinciden';
+                        return 'Por favor ingrese su nombre';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) => setState(() {}),
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _correoController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      prefixIcon: const Icon(Icons.email),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingrese su correo';
+                      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Por favor ingrese un correo válido';
                       }
                       return null;
                     },
@@ -391,77 +398,94 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                       });
                     },
                   ),
-                ),
-                if (_confirmCorreoTouched && _correoError != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      _correoError!,
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _contrasenaController,
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () {
+                  const SizedBox(height: 16),
+                  Focus(
+                    onFocusChange: (hasFocus) {
+                      if (!hasFocus) {
                         setState(() {
-                          _passwordVisible = !_passwordVisible;
+                          _confirmCorreoTouched = true;
+                          _checkCorreoMatch();
+                        });
+                      }
+                    },
+                    child: TextFormField(
+                      controller: _confirmCorreoController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirmar Correo',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        prefixIcon: const Icon(Icons.email),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor confirme su correo';
+                        } else if (value != _correoController.text) {
+                          return 'Los correos no coinciden';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          _checkCorreoMatch();
                         });
                       },
                     ),
                   ),
-                  obscureText: !_passwordVisible,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingrese su contraseña';
-                    } else if (value.length < 8) {
-                      return 'La contraseña debe tener al menos 8 caracteres';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) {
-                    setState(() {
-                      _checkContrasenaMatch();
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                Focus(
-                  onFocusChange: (hasFocus) {
-                    if (!hasFocus) {
-                      setState(() {
-                        _confirmContrasenaTouched = true;
-                        _checkContrasenaMatch();
-                      });
-                    }
-                  },
-                  child: TextFormField(
-                    controller: _confirmContrasenaController,
+                  if (_confirmCorreoTouched && _correoError != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                        _correoError!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _contrasenaController,
                     decoration: InputDecoration(
-                      labelText: 'Confirmar Contraseña',
+                      labelText: 'Contraseña',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      prefixIcon: const Icon(Icons.lock),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
-                            _confirmPasswordVisible = !_confirmPasswordVisible;
+                            _passwordVisible = !_passwordVisible;
                           });
                         },
                       ),
                     ),
-                    obscureText: !_confirmPasswordVisible,
+                    obscureText: !_passwordVisible,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor confirme su contraseña';
-                      } else if (value != _contrasenaController.text) {
-                        return 'Las contraseñas no coinciden';
+                        return 'Por favor ingrese su contraseña';
+                      } else if (value.length < 8) {
+                        return 'La contraseña debe tener al menos 8 caracteres';
                       }
                       return null;
                     },
@@ -471,215 +495,344 @@ class UserRegisterScreenState extends State<UserRegisterScreen> {
                       });
                     },
                   ),
-                ),
-                if (_confirmContrasenaTouched && _contrasenaError != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text(
-                      _contrasenaError!,
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _telefonoController,
-                  decoration: const InputDecoration(labelText: 'Teléfono'),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10),
-                  ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingrese su teléfono';
-                    } else if (value.length != 10) {
-                      return 'El teléfono debe tener 10 dígitos';
-                    }
-                    return null;
-                  },
-                  onChanged: (value) => setState(() {}),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _fechaNacimientoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Fecha de Nacimiento (Año-mes-día)',
+                  const SizedBox(height: 16),
+                  Focus(
+                    onFocusChange: (hasFocus) {
+                      if (!hasFocus) {
+                        setState(() {
+                          _confirmContrasenaTouched = true;
+                          _checkContrasenaMatch();
+                        });
+                      }
+                    },
+                    child: TextFormField(
+                      controller: _confirmContrasenaController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirmar Contraseña',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingrese su fecha de nacimiento';
-                          } else if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value)) {
-                            return 'Ingresa tu fecha de nacimiento con el formato Año-mes-día';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => setState(() {}),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.calendar_today),
-                      onPressed: () => _selectDate(context),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<int>(
-                  value: _selectedEstado,
-                  decoration: const InputDecoration(labelText: 'Estado'),
-                  items: _estados.map<DropdownMenuItem<int>>((estado) {
-                    return DropdownMenuItem<int>(
-                      value: estado['id'],
-                      child: Text(estado['nombre']),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedEstado = value;
-                      _municipios = [];
-                      _selectedMunicipio = null;
-                      _loadMunicipios(value!);
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Por favor seleccione un estado';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<int>(
-                  value: _selectedMunicipio,
-                  decoration: const InputDecoration(labelText: 'Municipio'),
-                  items: _municipios.map<DropdownMenuItem<int>>((municipio) {
-                    return DropdownMenuItem<int>(
-                      value: municipio['id'],
-                      child: Container(
-                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                        child: Text(
-                          municipio['nombre'],
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
+                        filled: true,
+                        fillColor: Colors.white,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                          borderRadius: BorderRadius.circular(30.0),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedMunicipio = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Por favor seleccione un municipio';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<int>(
-                  value: _selectedInfoDivulgacion,
-                  decoration: const InputDecoration(labelText: '¿Cómo conociste la aplicación?'),
-                  items: _infoDivulgacion.map<DropdownMenuItem<int>>((info) {
-                    return DropdownMenuItem<int>(
-                      value: info['id'],
-                      child: Container(
-                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                        child: Text(
-                          info['nombre'],
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                          borderRadius: BorderRadius.circular(30.0),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedInfoDivulgacion = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Por favor seleccione una opción de info divulgación';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                const Text('¿Tienes experiencia trabajando en tiendas departamentales? Como Palacio de Hierro, Liverpool, Coppel, Sears, etc'),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ListTile(
-                        title: const Text('Sí'),
-                        leading: Radio<bool>(
-                          value: true,
-                          groupValue: _experiencia,
-                          onChanged: (bool? value) {
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
                             setState(() {
-                              _experiencia = value!;
+                              _confirmPasswordVisible = !_confirmPasswordVisible;
                             });
                           },
                         ),
                       ),
+                      obscureText: !_confirmPasswordVisible,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor confirme su contraseña';
+                        } else if (value != _contrasenaController.text) {
+                          return 'Las contraseñas no coinciden';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          _checkContrasenaMatch();
+                        });
+                      },
                     ),
-                    Expanded(
-                      child: ListTile(
-                        title: const Text('No'),
-                        leading: Radio<bool>(
-                          value: false,
-                          groupValue: _experiencia,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _experiencia = value!;
-                            });
+                  ),
+                  if (_confirmContrasenaTouched && _contrasenaError != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                        _contrasenaError!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _telefonoController,
+                    decoration: InputDecoration(
+                      labelText: 'Teléfono',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingrese su teléfono';
+                      } else if (value.length != 10) {
+                        return 'El teléfono debe tener 10 dígitos';
+                      }
+                      return null;
+                    },
+                    onChanged: (value) => setState(() {}),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _fechaNacimientoController,
+                          decoration: InputDecoration(
+                            labelText: 'Fecha de Nacimiento (Año-mes-día)',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingrese su fecha de nacimiento';
+                            } else if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value)) {
+                              return 'Ingresa tu fecha de nacimiento con el formato Año-mes-día';
+                            }
+                            return null;
                           },
+                          onChanged: (value) => setState(() {}),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () => _selectDate(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<int>(
+                    value: _selectedEstado,
+                    decoration: InputDecoration(
+                      labelText: 'Estado',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    items: _estados.map<DropdownMenuItem<int>>((estado) {
+                      return DropdownMenuItem<int>(
+                        value: estado['id'],
+                        child: Text(estado['nombre']),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedEstado = value;
+                        _municipios = [];
+                        _selectedMunicipio = null;
+                        _loadMunicipios(value!);
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Por favor seleccione un estado';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<int>(
+                    value: _selectedMunicipio,
+                    decoration: InputDecoration(
+                      labelText: 'Municipio',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    items: _municipios.map<DropdownMenuItem<int>>((municipio) {
+                      return DropdownMenuItem<int>(
+                        value: municipio['id'],
+                        child: Container(
+                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+                          child: Text(
+                            municipio['nombre'],
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedMunicipio = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Por favor seleccione un municipio';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<int>(
+                    value: _selectedInfoDivulgacion,
+                    decoration: InputDecoration(
+                      labelText: '¿Cómo conociste la aplicación?',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    items: _infoDivulgacion.map<DropdownMenuItem<int>>((info) {
+                      return DropdownMenuItem<int>(
+                        value: info['id'],
+                        child: Container(
+                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+                          child: Text(
+                            info['nombre'],
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedInfoDivulgacion = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Por favor seleccione una opción de info divulgación';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('¿Tienes experiencia trabajando en tiendas departamentales? Como Palacio de Hierro, Liverpool, Coppel, Sears, etc'),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ListTile(
+                          title: const Text('Sí'),
+                          leading: Radio<bool>(
+                            value: true,
+                            groupValue: _experiencia,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _experiencia = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListTile(
+                          title: const Text('No'),
+                          leading: Radio<bool>(
+                            value: false,
+                            groupValue: _experiencia,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _experiencia = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  CheckboxListTile(
+                    value: _acceptedPrivacyTerms,
+                    onChanged: (value) {
+                      setState(() {
+                        _acceptedPrivacyTerms = value!;
+                      });
+                    },
+                    title: GestureDetector(
+                      onTap: () => _showPrivacyTerms(context),
+                      child: const Text(
+                        'Aceptar términos de privacidad',
+                        style: TextStyle(
+                          color: Colors.blue,
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                CheckboxListTile(
-                  value: _acceptedPrivacyTerms,
-                  onChanged: (value) {
-                    setState(() {
-                      _acceptedPrivacyTerms = value!;
-                    });
-                  },
-                  title: GestureDetector(
-                    onTap: () => _showPrivacyTerms(context),
-                    child: const Text(
-                      'Aceptar términos de privacidad',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Colors.blue,
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _isFormValid() ? _submitForm : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _isFormValid() ? const Color.fromARGB(255, 68, 202, 255) : Colors.grey,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
                       ),
+                      textStyle: const TextStyle(fontSize: 18),
                     ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                        : const Text('Registrarse'),
                   ),
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _isFormValid() ? _submitForm : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _isFormValid() ? Colors.blue : Colors.grey,
-                    foregroundColor: Colors.black,
-                  ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        )
-                      : const Text(
-                          'Registrarse',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

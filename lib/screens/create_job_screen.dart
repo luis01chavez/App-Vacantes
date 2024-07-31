@@ -99,8 +99,7 @@ class CreateJobScreenState extends State<CreateJobScreen> {
 
   void _submitForm() async {
     if (_formKey.currentState!.validate() && _selectedEstados.isNotEmpty && _imagenBase64.isNotEmpty) {
-      setState(() {
-      });
+      setState(() {});
 
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('userId');
@@ -131,8 +130,7 @@ class CreateJobScreenState extends State<CreateJobScreen> {
         }
       } finally {
         if (mounted) {
-          setState(() {
-          });
+          setState(() {});
         }
       }
     } else {
@@ -162,8 +160,10 @@ class CreateJobScreenState extends State<CreateJobScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Crear Empleo'),
+        backgroundColor: Colors.greenAccent,
       ),
-      body: Padding(
+      body: Container(
+        color: Colors.white,
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
@@ -173,7 +173,19 @@ class CreateJobScreenState extends State<CreateJobScreen> {
               children: [
                 TextFormField(
                   controller: _tituloController,
-                  decoration: const InputDecoration(labelText: 'Título'),
+                  decoration: InputDecoration(
+                    labelText: 'Título',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   maxLength: 100,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -185,7 +197,19 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _descripcionController,
-                  decoration: const InputDecoration(labelText: 'Descripción'),
+                  decoration: InputDecoration(
+                    labelText: 'Descripción',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   maxLength: 300,
                   maxLines: 3,
                   validator: (value) {
@@ -198,9 +222,19 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _fechaCaducidadController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Fecha de caducidad',
-                    suffixIcon: Icon(Icons.calendar_today),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    suffixIcon: const Icon(Icons.calendar_today),
                   ),
                   readOnly: true,
                   onTap: () => _selectDate(context),
@@ -214,6 +248,13 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _pickImage,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   child: const Text('Seleccionar Imagen'),
                 ),
                 if (_imagenBytes != null) ...[
@@ -228,6 +269,13 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                           _imagenBase64 = '';
                         });
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
                       child: const Text('Eliminar Imagen'),
                     ),
                   ),
@@ -235,7 +283,19 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                 const SizedBox(height: 16),
                 const Text('Estados:'),
                 DropdownButtonFormField<int>(
-                  decoration: const InputDecoration(labelText: 'Selecciona un estado'),
+                  decoration: InputDecoration(
+                    labelText: 'Selecciona un estado',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   value: _selectedEstadoTemp,
                   items: _estados.map<DropdownMenuItem<int>>((estado) {
                     return DropdownMenuItem<int>(
@@ -283,7 +343,19 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                 const SizedBox(height: 16),
                 const Text('Municipios:'),
                 DropdownButtonFormField<int>(
-                  decoration: const InputDecoration(labelText: 'Selecciona un municipio'),
+                  decoration: InputDecoration(
+                    labelText: 'Selecciona un municipio',
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                  ),
                   value: _selectedMunicipioTemp,
                   items: _selectedEstados.expand((estadoId) {
                     final municipios = _municipiosPorEstado[estadoId] ?? [];
@@ -351,7 +423,7 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                     ];
                   }).toList(),
                 ),
-
+                const SizedBox(height: 16),
                 Center(
                   child: SizedBox(
                     width: double.infinity,
@@ -359,6 +431,13 @@ class CreateJobScreenState extends State<CreateJobScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0), // Padding adicional para que no toque los bordes
                       child: ElevatedButton(
                         onPressed: _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
                         child: const Padding(
                           padding: EdgeInsets.symmetric(vertical: 16.0), // Aumenta el padding vertical para un botón más grande
                           child: Text(

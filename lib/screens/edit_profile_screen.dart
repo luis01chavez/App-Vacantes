@@ -129,7 +129,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           "fechaNacimiento": _fechaNacimientoController.text,
           "estado": {"id": _selectedEstado},
           "municipio": {"id": _selectedMunicipio},
-          // Rest of the user data unchanged
           "correo": _userData['correo'],
           "correoVerificado": _userData['correoVerificado'],
           "codigoVerificacionCorreo": _userData['codigoVerificacionCorreo'],
@@ -143,7 +142,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
         await ApiService().updateUserData(parsedUserId, userData);
         
-        // Actualizar el nombre en SharedPreferences
         await prefs.setString('userName', _nombreController.text.split(' ')[0]);
 
         if (!mounted) return;
@@ -178,10 +176,12 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editar Perfil'),
+        backgroundColor: Colors.greenAccent,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : Container(
+              color: Colors.white,
               padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
@@ -190,7 +190,22 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       TextFormField(
                         controller: _nombreController,
-                        decoration: const InputDecoration(labelText: 'Nombre'),
+                        decoration: InputDecoration(
+                          labelText: 'Nombre',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingrese su nombre';
@@ -203,6 +218,19 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                         controller: _contrasenaController,
                         decoration: InputDecoration(
                           labelText: 'Contraseña (dejar en blanco si no deseas cambiarla)',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _passwordVisible ? Icons.visibility : Icons.visibility_off,
@@ -225,7 +253,22 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _telefonoController,
-                        decoration: const InputDecoration(labelText: 'Teléfono'),
+                        decoration: InputDecoration(
+                          labelText: 'Teléfono',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
                         keyboardType: TextInputType.number,
                         inputFormatters: <TextInputFormatter>[
                           FilteringTextInputFormatter.digitsOnly
@@ -245,14 +288,27 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                           Expanded(
                             child: TextFormField(
                               controller: _fechaNacimientoController,
-                              decoration: const InputDecoration(
-                                labelText: 'Fecha de Nacimiento (YYYY-MM-DD)',
+                              decoration: InputDecoration(
+                                labelText: 'Fecha de Nacimiento (Año-mes-día)',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Por favor ingrese su fecha de nacimiento';
                                 } else if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value)) {
-                                  return 'Ingresa tu fecha de nacimiento con el formato YYYY-MM-DD';
+                                  return 'Ingresa tu fecha de nacimiento con el formato Año-mes-día';
                                 }
                                 return null;
                               },
@@ -267,7 +323,22 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
                         value: _selectedEstado,
-                        decoration: const InputDecoration(labelText: 'Estado'),
+                        decoration: InputDecoration(
+                          labelText: 'Estado',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
                         items: _estados.map<DropdownMenuItem<int>>((estado) {
                           return DropdownMenuItem<int>(
                             value: estado['id'],
@@ -292,7 +363,22 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int>(
                         value: _selectedMunicipio,
-                        decoration: const InputDecoration(labelText: 'Municipio'),
+                        decoration: InputDecoration(
+                          labelText: 'Municipio',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
                         items: _municipios.map<DropdownMenuItem<int>>((municipio) {
                           return DropdownMenuItem<int>(
                             value: municipio['id'],
@@ -356,6 +442,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       ElevatedButton(
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),

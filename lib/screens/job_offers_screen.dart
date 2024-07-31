@@ -243,6 +243,7 @@ class JobOffersScreenState extends State<JobOffersScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ofertas de Empleo'),
+        backgroundColor: Colors.greenAccent,
         bottom: userRole == 'admin'
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(60.0),
@@ -312,18 +313,25 @@ class JobOfferCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(10.0),
+      elevation: 4.0, // Sombra a la tarjeta
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
       child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch, // Para centrar el título
             children: [
-              Text(
-                jobOffer.titulo,
-                style: const TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(height: 10),
+              Center( // Centra el texto del título
+                child: Text(
+                  jobOffer.titulo,
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 5.0),
@@ -340,3 +348,4 @@ class JobOfferCard extends StatelessWidget {
     );
   }
 }
+

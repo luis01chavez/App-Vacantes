@@ -30,6 +30,7 @@ class NosotrosScreenState extends State<NosotrosScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nosotros'),
+        backgroundColor: Colors.greenAccent,
         actions: [
           if (!_isLoggedIn)
             Padding(
@@ -39,7 +40,7 @@ class NosotrosScreenState extends State<NosotrosScreen> {
                   Navigator.pushReplacementNamed(context, '/login');
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.blueAccent, // Texto blanco
+                  foregroundColor: Colors.white, backgroundColor: const Color.fromARGB(255, 68, 202, 255), // Texto blanco
                   textStyle: const TextStyle(fontSize: 18), // Texto más grande
                 ),
                 child: const Text('Continuar'),

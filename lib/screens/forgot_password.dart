@@ -64,6 +64,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recuperar contraseña'),
+        backgroundColor: const Color.fromARGB(255, 68, 202, 255),
       ),
       body: Center(
         child: Padding(
@@ -81,10 +82,19 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _correoController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Correo',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                    filled: true,
+                    fillColor: Colors.white,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    prefixIcon: const Icon(Icons.email),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -101,8 +111,13 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     : ElevatedButton(
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                           textStyle: const TextStyle(fontSize: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
                         child: const Text('Enviar código'),
                       ),
@@ -246,20 +261,38 @@ class PasswordResetModalState extends State<PasswordResetModal> {
             children: [
               TextFormField(
                 initialValue: widget.correo,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Correo',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  prefixIcon: const Icon(Icons.email),
                 ),
                 readOnly: true,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _codigoController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Código de verificación',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.code),
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  prefixIcon: const Icon(Icons.code),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -280,7 +313,16 @@ class PasswordResetModalState extends State<PasswordResetModal> {
                 controller: _nuevaContrasenaController,
                 decoration: InputDecoration(
                   labelText: 'Nueva contraseña',
-                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.greenAccent, width: 2.0),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color.fromARGB(255, 68, 202, 255), width: 2.0),
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -307,12 +349,20 @@ class PasswordResetModalState extends State<PasswordResetModal> {
               ElevatedButton(
                 onPressed: _canResend ? _resendCode : null,
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   textStyle: const TextStyle(fontSize: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
                 ),
-                child: Text(
-                  _canResend ? 'Reenviar código' : 'Reenviar código ($_formattedCounter)',
-                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : Text(
+                        _canResend ? 'Reenviar código' : 'Reenviar código ($_formattedCounter)',
+                        style: const TextStyle(fontSize: 18),
+                      ),
               ),
             ],
           ),
@@ -323,8 +373,13 @@ class PasswordResetModalState extends State<PasswordResetModal> {
           child: ElevatedButton(
             onPressed: _submitForm,
             style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 68, 202, 255),
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               textStyle: const TextStyle(fontSize: 18),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
             ),
             child: _isLoading
                 ? const CircularProgressIndicator()

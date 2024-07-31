@@ -179,6 +179,7 @@ class JobDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle del Empleo'),
+        backgroundColor: Colors.greenAccent,
       ),
       body: FutureBuilder<JobDetail>(
         future: _fetchJobDetail(),
